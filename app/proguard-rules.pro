@@ -1,0 +1,1 @@
+-keep class com.animapper.app.data.api.models.** { *; }
