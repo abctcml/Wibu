@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -18,24 +18,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup Gradle Action
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant Execute Permission for gradlew
+        run: chmod +x gradlew || true
 
       - name: Generate local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Install Gradle
-        run: |
-          curl -sL -o gradle.zip https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
-          unzip -q gradle.zip -d /opt/
-          echo "/opt/gradle-8.10.2/bin" >> $GITHUB_PATH
-
       - name: Build Debug APK
-        run: |
-          gradle wrapper --gradle-version 8.10.2
-          ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon || gradle assembleDebug --no-daemon
 
-      - name: Upload Debug APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: AniMapper-debug
